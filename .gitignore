@@ -1,0 +1,7 @@
+# Derived artifact - rebuildable from data/raw via `python collect.py --rebuild`
+data/snapshots.db
+
+# pybaseball cache
+__pycache__/
+*.pyc
+.pybaseball/

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baseball Archive</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Baseball Archive</h1>
+    <p class="subtitle">Daily MLB stat snapshots</p>
+  </header>
+
+  <main>
+    <section class="controls" id="controls" aria-label="Filters">
+      <div class="control-row">
+        <div class="control-group">
+          <label for="sel-date">Date</label>
+          <select id="sel-date"></select>
+        </div>
+        <div class="control-group">
+          <label for="sel-source">Source</label>
+          <select id="sel-source"></select>
+        </div>
+        <div class="control-group">
+          <label for="sel-metric">Metric</label>
+          <select id="sel-metric"></select>
+        </div>
+      </div>
+      <div class="control-row secondary">
+        <div class="control-group">
+          <label for="inp-filter">Filter players</label>
+          <input type="search" id="inp-filter" placeholder="e.g. Ohtani">
+        </div>
+        <div class="control-group sort-group">
+          <label>Sort</label>
+          <button id="btn-sort" class="sort-btn" aria-pressed="false">▼ Descending</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="snapshot-info" id="snapshot-info" hidden>
+      <span id="snapshot-date-label"></span>
+      <span class="snapshot-note">Values as recorded on that date.</span>
+    </section>
+
+    <section class="results" id="results">
+      <div id="status" class="status-msg">Loading…</div>
+      <div id="table-wrap" hidden>
+        <table id="leaderboard">
+          <thead>
+            <tr>
+              <th class="col-rank">Rank</th>
+              <th class="col-player">Player</th>
+              <th class="col-team">Team</th>
+              <th class="col-value" id="th-value">Value</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

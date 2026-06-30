@@ -1,0 +1,5 @@
+requests>=2.31
+pandas>=2.0
+# Only needed for the WAR sources (FanGraphs / Baseball Reference).
+# The Savant + MLB Stats API core works without it.
+pybaseball>=2.2

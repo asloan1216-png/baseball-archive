@@ -1,0 +1,42 @@
+name: daily-snapshot
+
+on:
+  schedule:
+    # 13:30 UTC = ~9:30am ET during the season (EDT). Runs on GitHub's servers,
+    # so your desktop does not need to be on. Note: GitHub uses UTC and can delay
+    # scheduled runs under load; this commits daily, which also keeps the repo
+    # active so the schedule is not auto-disabled.
+    - cron: "30 13 * * *"
+  workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
+
+permissions:
+  contents: write          # needed to commit the new raw snapshot back
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Collect today's snapshot
+        run: python collect.py
+
+      - name: Rebuild DB and export site
+        run: |
+          python collect.py --rebuild
+          python export_site.py
+
+      - name: Commit raw snapshot and site
+        run: |
+          git config user.name  "stat-archive-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/raw docs
+          git commit -m "snapshot $(date -u +%Y-%m-%d)" || echo "nothing to commit"
+          git push
