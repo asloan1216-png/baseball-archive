@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Player — Baseball Archive</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-nav">
+      <a href="index.html" class="back-link">← Back to leaderboards</a>
+    </div>
+    <h1 id="player-name">—</h1>
+    <p class="subtitle" id="player-team"></p>
+  </header>
+
+  <main>
+    <div id="error-msg" class="status-msg" hidden></div>
+
+    <div id="player-content" hidden>
+      <section class="controls" aria-label="Chart controls">
+        <div class="control-row">
+          <div class="control-group">
+            <label for="sel-source">Source</label>
+            <select id="sel-source"></select>
+          </div>
+          <div class="control-group">
+            <label for="sel-metric">Metric</label>
+            <select id="sel-metric"></select>
+          </div>
+        </div>
+      </section>
+
+      <div class="chart-wrap">
+        <canvas id="chart"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="player.js"></script>
+</body>
+</html>

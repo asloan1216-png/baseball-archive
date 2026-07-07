@@ -164,7 +164,8 @@ def parse_war_csv(content, snapshot_date, src, season):
         val = to_float(r.get("value"))
         if val is None:
             continue
-        pid = str(r.get("player_id") or r.get("player_name") or "unknown")
+        raw_pid = str(r.get("player_id") or r.get("player_name") or "unknown")
+        pid = str(int(float(raw_pid))) if raw_pid.endswith(".0") else raw_pid
         rows.append((snapshot_date, src["name"], season, pid,
                      r.get("player_name"), r.get("team"), metric, val))
     return rows
@@ -214,7 +215,7 @@ def _slim_bref(df, season):
     teamc = _find_col(df, ["team_ID", "team", "Team"])
     warc = _first_present(df, ["WAR", "war"])
     out = pd.DataFrame({
-        "player_id": (df[idc].astype(str) if idc else df[namec].astype(str)),
+        "player_id": (df[idc].apply(lambda v: str(int(float(v))) if pd.notna(v) and str(v).endswith(".0") else str(v)) if idc else df[namec].astype(str)),
         "player_name": df[namec],
         "team": (df[teamc] if teamc else ""),
         "value": pd.to_numeric(df[warc], errors="coerce"),

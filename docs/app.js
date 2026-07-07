@@ -141,7 +141,7 @@ function render() {
     const tr = document.createElement("tr");
     tr.innerHTML =
       `<td class="col-rank">${i + 1}</td>` +
-      `<td class="col-player">${esc(p.name ?? "—")}</td>` +
+      `<td class="col-player"><a class="player-link" href="player.html?id=${esc(String(p.id ?? ""))}">${esc(p.name ?? "—")}</a></td>` +
       `<td class="col-team">${esc(p.team ?? "—")}</td>` +
       `<td class="col-value">${formatValue(p.value)}</td>`;
     tbody.appendChild(tr);
