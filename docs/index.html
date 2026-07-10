@@ -13,54 +13,127 @@
   </header>
 
   <main>
-    <section class="controls" id="controls" aria-label="Filters">
-      <div class="control-row">
-        <div class="control-group">
-          <label for="sel-date">Date</label>
-          <select id="sel-date"></select>
-        </div>
-        <div class="control-group">
-          <label for="sel-source">Source</label>
-          <select id="sel-source"></select>
-        </div>
-        <div class="control-group">
-          <label for="sel-metric">Metric</label>
-          <select id="sel-metric"></select>
-        </div>
-      </div>
-      <div class="control-row secondary">
-        <div class="control-group">
-          <label for="inp-filter">Filter players</label>
-          <input type="search" id="inp-filter" placeholder="e.g. Ohtani">
-        </div>
-        <div class="control-group sort-group">
-          <label>Sort</label>
-          <button id="btn-sort" class="sort-btn" aria-pressed="false">▼ Descending</button>
-        </div>
-      </div>
-    </section>
+    <!-- ── Tab nav ──────────────────────────────────────────── -->
+    <nav class="tab-nav" role="tablist" aria-label="Views">
+      <button class="tab-btn active" id="tab-leaderboard" role="tab"
+              aria-selected="true" aria-controls="panel-leaderboard">Leaderboards</button>
+      <button class="tab-btn" id="tab-movers" role="tab"
+              aria-selected="false" aria-controls="panel-movers">Biggest Movers</button>
+    </nav>
 
-    <section class="snapshot-info" id="snapshot-info" hidden>
-      <span id="snapshot-date-label"></span>
-      <span class="snapshot-note">Values as recorded on that date.</span>
-    </section>
+    <!-- ── Leaderboard panel ────────────────────────────────── -->
+    <div id="panel-leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard">
+      <section class="controls" aria-label="Leaderboard filters">
+        <div class="control-row">
+          <div class="control-group">
+            <label for="sel-date">Date</label>
+            <select id="sel-date"></select>
+          </div>
+          <div class="control-group">
+            <label for="sel-source">Source</label>
+            <select id="sel-source"></select>
+          </div>
+          <div class="control-group">
+            <label for="sel-metric">Metric</label>
+            <select id="sel-metric"></select>
+          </div>
+        </div>
+        <div class="control-row secondary">
+          <div class="control-group">
+            <label for="inp-filter">Filter players</label>
+            <input type="search" id="inp-filter" placeholder="e.g. Ohtani">
+          </div>
+          <div class="control-group sort-group">
+            <label>Sort</label>
+            <button id="btn-sort" class="sort-btn" aria-pressed="false">▼ Descending</button>
+          </div>
+          <div class="control-group check-group">
+            <label class="check-label">
+              <input type="checkbox" id="chk-qualified"> Qualified only
+            </label>
+          </div>
+        </div>
+      </section>
 
-    <section class="results" id="results">
-      <div id="status" class="status-msg">Loading…</div>
-      <div id="table-wrap" hidden>
-        <table id="leaderboard">
-          <thead>
-            <tr>
-              <th class="col-rank">Rank</th>
-              <th class="col-player">Player</th>
-              <th class="col-team">Team</th>
-              <th class="col-value" id="th-value">Value</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboard-body"></tbody>
-        </table>
-      </div>
-    </section>
+      <section class="snapshot-info" id="snapshot-info" hidden>
+        <span id="snapshot-date-label"></span>
+        <span class="snapshot-note">Values as recorded on that date.</span>
+      </section>
+
+      <section class="results" id="results">
+        <div id="status" class="status-msg">Loading…</div>
+        <div id="table-wrap" hidden>
+          <table id="leaderboard">
+            <thead>
+              <tr>
+                <th class="col-rank">Rank</th>
+                <th class="col-player">Player</th>
+                <th class="col-team">Team</th>
+                <th class="col-value" id="th-value">Value</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div><!-- /panel-leaderboard -->
+
+    <!-- ── Movers panel ─────────────────────────────────────── -->
+    <div id="panel-movers" role="tabpanel" aria-labelledby="tab-movers" hidden>
+      <section class="controls" aria-label="Movers filters">
+        <div class="control-row">
+          <div class="control-group">
+            <label for="sel-movers-source">Source</label>
+            <select id="sel-movers-source"></select>
+          </div>
+          <div class="control-group">
+            <label for="sel-movers-metric">Metric</label>
+            <select id="sel-movers-metric"></select>
+          </div>
+          <div class="control-group">
+            <label for="sel-movers-window">Window</label>
+            <select id="sel-movers-window">
+              <option value="7">7 days</option>
+              <option value="14">14 days</option>
+              <option value="30">30 days</option>
+              <option value="season">Season (all)</option>
+            </select>
+          </div>
+          <div class="control-group sort-group">
+            <label>Direction</label>
+            <button id="btn-movers-dir" class="sort-btn risers-btn" aria-pressed="false">▲ Risers</button>
+          </div>
+          <div class="control-group check-group">
+            <label class="check-label">
+              <input type="checkbox" id="chk-movers-qualified"> Qualified only
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="snapshot-info" id="movers-info" hidden>
+        <span id="movers-date-label"></span>
+      </section>
+
+      <section class="results" id="movers-results">
+        <div id="movers-status" class="status-msg">Loading…</div>
+        <div id="movers-table-wrap" hidden>
+          <table id="movers-table">
+            <thead>
+              <tr>
+                <th class="col-rank">Rank</th>
+                <th class="col-player">Player</th>
+                <th class="col-team">Team</th>
+                <th class="col-value" id="th-start">Start</th>
+                <th class="col-value" id="th-end">End</th>
+                <th class="col-delta" id="th-delta">Δ</th>
+              </tr>
+            </thead>
+            <tbody id="movers-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div><!-- /panel-movers -->
   </main>
 
   <script src="app.js"></script>

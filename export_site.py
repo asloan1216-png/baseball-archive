@@ -12,6 +12,7 @@ Idempotent: re-runs overwrite all files cleanly.
 import json
 import shutil
 import sqlite3
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -19,6 +20,26 @@ from db import DB_PATH
 from labels import LOWER_IS_BETTER, metric_label, source_label
 
 OUT = Path(__file__).parent / "docs" / "data"
+
+# Sources whose rows are always considered qualified.
+_ALWAYS_QUALIFIED = {"mlb_hitting", "mlb_pitching", "savant_oaa_fielder"}
+# Sources qualified against the MLB hitting pool.
+_HITTER_QUALIFIED = {"savant_xstats_batter", "bref_war_batting"}
+# Sources qualified against the MLB pitching pool.
+_PITCHER_QUALIFIED = {"savant_xstats_pitcher", "bref_war_pitching"}
+
+
+def _is_qualified(src: str, pid: str,
+                  qual_hit: set, qual_pit: set) -> bool:
+    """Return True if this player counts as qualified for the given source."""
+    if src in _ALWAYS_QUALIFIED:
+        return True
+    if src in _HITTER_QUALIFIED:
+        # Safety: if the qualified pool is empty, treat everyone as qualified.
+        return (not qual_hit) or (pid in qual_hit)
+    if src in _PITCHER_QUALIFIED:
+        return (not qual_pit) or (pid in qual_pit)
+    return True  # unknown source — assume qualified
 
 # How many of the most-recent distinct snapshot dates to publish.
 # data/raw/ is never touched — increase this and re-export to restore older dates.
@@ -39,6 +60,11 @@ def main() -> None:
         for child in OUT.iterdir():
             if child.is_dir():
                 shutil.rmtree(child)
+
+    # --- version.json ---
+    v = str(int(time.time()))
+    write_json(OUT / "version.json", {"v": v})
+    print(f"version.json  (v={v})")
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -86,6 +112,18 @@ def main() -> None:
 
     file_count = 0
     for date in dates:  # already trimmed to SITE_DAYS
+        # Build qualified pools for this date from the MLB box-stat sources.
+        # If a source didn't run that day the set will be empty, triggering
+        # the safety fallback (everyone marked q=true) in _is_qualified.
+        qual_hit = {r[0] for r in conn.execute(
+            "SELECT DISTINCT player_id FROM metrics "
+            "WHERE snapshot_date=? AND source='mlb_hitting'", (date,)
+        )}
+        qual_pit = {r[0] for r in conn.execute(
+            "SELECT DISTINCT player_id FROM metrics "
+            "WHERE snapshot_date=? AND source='mlb_pitching'", (date,)
+        )}
+
         sources_for_date = [r[0] for r in conn.execute(
             "SELECT DISTINCT source FROM metrics WHERE snapshot_date=? ORDER BY source",
             (date,),
@@ -105,6 +143,7 @@ def main() -> None:
                     "name":  r["player_name"],
                     "team":  r["team"],
                     "value": r["value"],
+                    "q":     _is_qualified(src, r["player_id"], qual_hit, qual_pit),
                 })
 
                 # Accumulate per-player series (skip blank ids).

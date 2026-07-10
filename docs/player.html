@@ -29,10 +29,34 @@
             <label for="sel-metric">Metric</label>
             <select id="sel-metric"></select>
           </div>
+          <div class="control-group">
+            <label for="sel-range">Range</label>
+            <select id="sel-range">
+              <option value="7">Last 7 days</option>
+              <option value="14">Last 14 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="all" selected>All</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-row secondary">
+          <div class="control-group">
+            <label for="inp-date-start">Custom from</label>
+            <input type="date" id="inp-date-start">
+          </div>
+          <div class="control-group">
+            <label for="inp-date-end">Custom to</label>
+            <input type="date" id="inp-date-end">
+          </div>
+          <div class="control-group sort-group">
+            <label>&nbsp;</label>
+            <button id="btn-clear-dates" class="sort-btn">Clear dates</button>
+          </div>
         </div>
       </section>
 
       <div class="chart-wrap">
+        <div id="chart-msg" class="status-msg" hidden></div>
         <canvas id="chart"></canvas>
       </div>
     </div>
