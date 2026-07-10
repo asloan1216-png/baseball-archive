@@ -6,9 +6,6 @@ const DEFAULT_MOVERS_METRIC   = "bwar";
 const DEFAULT_MOVERS_WINDOW   = "7";       // "7", "14", "30", or "season"
 const DEFAULT_MOVERS_DIR      = "risers";  // "risers" or "fallers"
 
-// ── Qualified only default ────────────────────────────────────────────────────
-const DEFAULT_QUALIFIED_ONLY = true;
-
 // ── Cache-busting ─────────────────────────────────────────────────────────────
 // Populated once on boot from data/version.json (fetched no-store).
 // All data fetches append ?v=<cacheBuster> so a new export busts stale files.
@@ -38,9 +35,6 @@ const snapInfo   = document.getElementById("snapshot-info");
 const snapLabel  = document.getElementById("snapshot-date-label");
 
 // ── DOM refs — movers ─────────────────────────────────────────────────────────
-const chkQualified      = document.getElementById("chk-qualified");
-const chkMoversQualified = document.getElementById("chk-movers-qualified");
-
 const selMoversSource  = document.getElementById("sel-movers-source");
 const selMoversMetric  = document.getElementById("sel-movers-metric");
 const selMoversWindow  = document.getElementById("sel-movers-window");
@@ -111,9 +105,6 @@ async function boot() {
     setStatus("Failed to load index data. " + e.message);
     return;
   }
-
-  chkQualified.checked       = DEFAULT_QUALIFIED_ONLY;
-  chkMoversQualified.checked = DEFAULT_QUALIFIED_ONLY;
 
   populateDates();
   populateSources();          // leaderboard
@@ -205,10 +196,7 @@ function render() {
 
   updateSortBtn(asc);
 
-  // Filter: qualified first, then by name. Ranks recompute over filtered set.
-  let rows = chkQualified.checked
-    ? players.filter(p => p.q !== false)
-    : [...players];
+  let rows = [...players];
   if (filter) rows = rows.filter(p => (p.name || "").toLowerCase().includes(filter));
 
   rows.sort((a, b) => {
@@ -257,7 +245,6 @@ selDate.addEventListener("change", () => { state.sortAsc = null; loadAndRender()
 selSource.addEventListener("change", () => { state.sortAsc = null; populateMetrics(); loadAndRender(); });
 selMetric.addEventListener("change", () => { state.sortAsc = null; render(); });
 inpFilter.addEventListener("input", render);
-chkQualified.addEventListener("change", render);
 btnSort.addEventListener("click", () => {
   const src    = selSource.value;
   const metric = selMetric.value;
@@ -343,17 +330,13 @@ async function loadAndRenderMovers() {
     return;
   }
 
-  // Apply qualified filter to the end snapshot (qualified status = end-date state).
-  const qualOnly    = chkMoversQualified.checked;
-  const filteredEnd = qualOnly ? endRows.filter(p => p.q !== false) : endRows;
-
   // Build id → row map for start snapshot
   const startMap = {};
   startRows.forEach(p => { if (p.id) startMap[p.id] = p; });
 
   // Join with end snapshot, compute delta
   const movers = [];
-  filteredEnd.forEach(p => {
+  endRows.forEach(p => {
     if (!p.id || !(p.id in startMap)) return;
     movers.push({
       id:       p.id,
@@ -423,7 +406,6 @@ selMoversSource.addEventListener("change", () => {
 });
 selMoversMetric.addEventListener("change", loadAndRenderMovers);
 selMoversWindow.addEventListener("change", loadAndRenderMovers);
-chkMoversQualified.addEventListener("change", loadAndRenderMovers);
 btnMoversDir.addEventListener("click", () => {
   state.moversDir = state.moversDir === "risers" ? "fallers" : "risers";
   updateMoversDirBtn();

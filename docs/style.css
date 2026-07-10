@@ -229,28 +229,6 @@ tbody tr:nth-child(3) td.col-rank {
   position: relative;
 }
 
-/* ── Qualified only checkbox ─────────────────────────────── */
-.check-group {
-  flex: 0 1 auto;
-  justify-content: flex-end;
-}
-.check-label {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.85rem;
-  color: var(--text);
-  cursor: pointer;
-  user-select: none;
-  padding-top: 1.45rem; /* align with input bottom edge */
-}
-.check-label input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-
 /* ── Tabs ────────────────────────────────────────────────── */
 .tab-nav {
   display: flex;
